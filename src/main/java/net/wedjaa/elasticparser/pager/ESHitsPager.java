@@ -65,11 +65,12 @@ public class ESHitsPager implements ESResultsPager {
 	}
 	
 	public boolean hit_available() {
+		logger.debug("Hits info: next result " + result_idx + " of " + page_size);
 		return (result_idx + 1) < page_size && page >= 0;
 	}
 	
-	public int current_hit_idx() {
-		return result_idx;
+	public long current_hit_idx() {
+		return hits_count;
 	}
 	
 	public int next_hit_idx() {
@@ -82,6 +83,8 @@ public class ESHitsPager implements ESResultsPager {
 	}
 
 	public void  set_page_size(int page_size) {
+		this.page = 0;
+		this.result_idx = -1;
 		this.page_size = page_size;
 	}
 	
@@ -94,7 +97,8 @@ public class ESHitsPager implements ESResultsPager {
 	}
 	
 	public boolean done() {
-		return hits_count >= total_hits;
+		logger.debug("Checking if done: current hits: " + hits_count + " of " + total_hits);
+		return hits_count > total_hits;
 	}
 	
 	public String get_query() {
@@ -104,9 +108,10 @@ public class ESHitsPager implements ESResultsPager {
 	@Override
 	public Map<String, Object> next(SearchResponse response) {
 		// Make sure we have a hit to  return
-		if ( response.getHits().hits().length > (current_hit_idx() + 1) ) {
+		if ( response.getHits().hits().length > (result_idx+1) ) {
 			return response.getHits().getAt(this.next_hit_idx()).getSource();
 		}
+		logger.debug("Page exausted!");
 		return null;
 	}
 

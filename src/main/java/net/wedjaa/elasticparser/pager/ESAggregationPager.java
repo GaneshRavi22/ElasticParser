@@ -78,7 +78,7 @@ public class ESAggregationPager implements ESResultsPager {
 	}
 
 	@Override
-	public int current_hit_idx() {
+	public long current_hit_idx() {
 		return current_idx;
 	}
 

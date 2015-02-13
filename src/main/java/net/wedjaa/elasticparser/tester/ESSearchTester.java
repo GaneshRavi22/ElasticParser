@@ -157,19 +157,22 @@ public class ESSearchTester {
 		
 		Node node = NodeBuilder.nodeBuilder()
 					.settings(nodeSettings)
-					.clusterName("elasticparser.unittest")
+					//.clusterName("elasticparser.unittest")
+					.clusterName("elasticsearch")
 					.node();
 		
 		node.start();
 		
 		// Populate our test index
-		System.out.println("Preparing Unit Test Index - this may take a while...");
-		populateTest();
+		//System.out.println("Preparing Unit Test Index - this may take a while...");
+		//populateTest();
 		
+		try {
 		System.out.println("...OK - Executing query!");
 		// Try our searches
-		ESSearch search = new ESSearch(null, null, ESSearch.ES_MODE_AGGS, "localhost", 9600, "elasticparser.unittest" );
-		search.search(getQuery("test-aggs.json"));
+		// ESSearch search = new ESSearch(null, null, ESSearch.ES_MODE_AGGS, "localhost", 9600, "elasticparser.unittest" );
+		ESSearch search = new ESSearch(null, null, ESSearch.ES_MODE_HITS, "localhost", 9600, "elasticsearch" );
+		search.search(getQuery("test-hits.json"));
 		Map<String, Object> hit = null;
 		while (  (hit = search.next()) != null ) {
 			System.out.println("Hit: {");
@@ -179,7 +182,7 @@ public class ESSearchTester {
 			System.out.println("};");
 		}
 		search.close();
-		Map<String, Class<?>> fields = search.getFields(getQuery("test-aggs.json"));
+		Map<String, Class<?>> fields = search.getFields(getQuery("test-hits.json"));
 		List<String> sortedKeys=new ArrayList<String>(fields.keySet());
 		Collections.sort(sortedKeys);
 		Iterator<String> sortedKeyIter = sortedKeys.iterator();
@@ -187,8 +190,13 @@ public class ESSearchTester {
 			String fieldname = sortedKeyIter.next();
 			System.out.println(" --> " + fieldname + "["+ fields.get(fieldname).getCanonicalName() +"]");
 		}
-
-		node.stop();
+		
+		} catch(Exception ex) {
+			System.out.println("Exception: " + ex);
+		} finally {
+			System.out.println("Stopping Test Node");
+			node.stop();
+		}
 	}
 
 }
