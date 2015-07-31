@@ -388,9 +388,14 @@ public class ESSearch implements Connection
         Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", this.cluster)
                 .put("client.transport.sniff", true).build();
 
-        InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(this.hostname, this.port);
+        String [] hostnames = this.hostname.split("\\s*,\\s*");
+        logger.debug("Hostnames (" + hostnames.length + "): " + hostnames.toString());
+        
         TransportClient transportClient = new TransportClient(settings);
-        transportClient.addTransportAddress(transportAddress);
+        for (int hostIdx = 0; hostIdx<hostnames.length; hostIdx++) {
+            InetSocketTransportAddress transportAddress = new InetSocketTransportAddress(hostnames[hostIdx], this.port);
+            transportClient.addTransportAddress(transportAddress);
+        }
         this.esClient = transportClient;
 
     }
