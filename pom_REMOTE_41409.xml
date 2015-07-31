@@ -108,11 +108,6 @@
                 <artifactId>lucene-core</artifactId>
                 <version>${lucene.version}</version>
         </dependency>
-	<dependency>
-		<groupId>org.apache.lucene</groupId>
-		<artifactId>lucene-expressions</artifactId>
-		<version>${lucene.version}</version>
-	</dependency>
   </dependencies>
 <build>
  <plugins>
